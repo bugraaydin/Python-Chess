@@ -1,0 +1,9 @@
+rnbkqbnr
+pppppppp
+********
+********
+********
+********
+PPPPPPPP
+RNBQKBNR
+### IT IS POSSIBLE TO MODIFY GAME SETUP FROM THIS FILE, LOWERCASE FOR WHITE AND UPPER CASE FOR BLACK
