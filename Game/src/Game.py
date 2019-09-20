@@ -18,7 +18,6 @@ gameIcon = pygame.image.load('media/icons/car_icon.png')
 pygame.display.set_icon(gameIcon)
 
 
-
 def quitgame():
     pygame.quit()
     quit()
@@ -59,16 +58,23 @@ def game_loop():
                 gameDisplay.blit(board.image, (0, 0))
 
                 for piece in board.white_pieces + board.black_pieces:
-                    gameDisplay.blit(piece.image, (piece.x_file * int(cfg.display_width / 8), piece.y_file * int(cfg.display_height / 8)))
+                    gameDisplay.blit(piece.image, (
+                    piece.x_file * int(cfg.display_width / 8), piece.y_file * int(cfg.display_height / 8)))
                     if piece.is_selected:
-                        pygame.draw.circle(gameDisplay, (0,0,255), (piece.x_file * int(cfg.display_width / 8) + 35, piece.y_file * int(cfg.display_height / 8) + 35), 10)
-                    if piece.TYPE == "K" and board.is_checked[0] == True and piece.color == "white":
-                        pygame.draw.circle(gameDisplay, (0, 255, 0), (piece.x_file * int(cfg.display_width / 8) + 35, piece.y_file * int(cfg.display_height / 8) + 35), 10)
-                    if piece.TYPE == "K" and board.is_checked[1] == True and piece.color == "black":
-                        pygame.draw.circle(gameDisplay, (0, 255, 0), (piece.x_file * int(cfg.display_width / 8) + 35, piece.y_file * int(cfg.display_height / 8) + 35), 10)
+                        pygame.draw.circle(gameDisplay, (0, 0, 255), (piece.x_file * int(cfg.display_width / 8) + 35,
+                                                                      piece.y_file * int(cfg.display_height / 8) + 35),
+                                           10)
+                    if piece.TYPE == "K" and board.is_checked[0] is True and piece.color == "white":
+                        pygame.draw.circle(gameDisplay, (0, 255, 0), (piece.x_file * int(cfg.display_width / 8) + 35,
+                                                                      piece.y_file * int(cfg.display_height / 8) + 35),
+                                           10)
+                    if piece.TYPE == "K" and board.is_checked[1] is True and piece.color == "black":
+                        pygame.draw.circle(gameDisplay, (0, 255, 0), (piece.x_file * int(cfg.display_width / 8) + 35,
+                                                                      piece.y_file * int(cfg.display_height / 8) + 35),
+                                           10)
 
                 pygame.display.update()
-#
+
 
 game_loop()
 pygame.quit()

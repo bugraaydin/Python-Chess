@@ -75,12 +75,18 @@ class Board:
         for piece in pieces:
             x_difference = king.x_file - piece.x_file
             y_difference = piece.y_file - king.y_file
-            if [x_difference, y_difference] in piece.possible_moves:
+
+            if piece.TYPE == "P":
+                possible_moves = piece.get_pawn_attack_moves()
+            else:
+                possible_moves = piece.possible_moves
+
+            if [x_difference, y_difference] in possible_moves:
                 if not self.has_obstacles(king.x_file, king.y_file, x_difference, y_difference, piece):
                     self.is_checked[0] = True
+                    print("beyaz checklendi")
                     break
             self.is_checked[0] = False
-        print("beyaza check yok")
         # BLACK KING
 
         pieces = self.white_pieces
@@ -91,15 +97,31 @@ class Board:
         for piece in pieces:
             x_difference = king.x_file - piece.x_file
             y_difference = piece.y_file - king.y_file
-            if [x_difference, y_difference] in piece.possible_moves:
+
+            if piece.TYPE == "P":
+                possible_moves = piece.get_pawn_attack_moves()
+            else:
+                possible_moves = piece.possible_moves
+
+            if [x_difference, y_difference] in possible_moves:
                 if not self.has_obstacles(king.x_file, king.y_file, x_difference, y_difference, piece):
                     self.is_checked[1] = True
+                    print("siyah checklendi")
                     break
             self.is_checked[1] = False
-        print("siyaha check yok")
 
     def get_piece_by_position(self, x, y):
         for piece in self.white_pieces + self.black_pieces:
+            if piece.x_file == x and piece.y_file == y:
+                return piece
+        return None
+
+    def get_enemy_piece_by_position(self, x, y, color):
+        if  color == "white":
+            pieces = self.black_pieces
+        else:
+            pieces = self.white_pieces
+        for piece in pieces:
             if piece.x_file == x and piece.y_file == y:
                 return piece
         return None
@@ -118,7 +140,7 @@ class Board:
         return False
 
     def has_obstacles(self, x, y, x_difference, y_difference, piece):
-        if self.current_player == "white":
+        if piece.color == "white":
             pieces = self.white_pieces
         else:
             pieces = self.black_pieces
@@ -147,15 +169,17 @@ class Board:
             return False
 
     def move_piece(self, x, y):
+
+        self.detect_check()
+
         if self.current_player == "white":
             pieces = self.white_pieces
         else:
             pieces = self.black_pieces
 
-        self.detect_check()
-
         for piece in pieces:
             if piece.is_selected:
+                request_remove = False
                 x_difference = x - piece.x_file
                 y_difference = piece.y_file - y
 
@@ -169,10 +193,12 @@ class Board:
                     #### PAWN SPECIAL MOVES
                     if piece.TYPE == "P":
                         if [x_difference, y_difference] in piece.get_pawn_attack_moves():
-                            if not self.remove_piece_by_position(x, y, piece.color):
+                            if not self.get_enemy_piece_by_position(x, y, piece.color):
                                 piece.is_selected = False
                                 self.has_selected_piece = False
                                 return False
+                            else:
+                                request_remove = True
                         else:
                             if self.get_piece_by_position(x, y) is None:
                                 if (piece.color == "white" and piece.y_file == 6) or (
@@ -184,7 +210,7 @@ class Board:
                                 return False
                     ##########
                     ##
-                    ### ROOK
+                    ### CASTLE
                     elif piece.TYPE == "K" and (
                             [x_difference, y_difference] not in piece.get_king_moves() and [x_difference,
                                                                                             y_difference] in piece.possible_moves):
@@ -210,14 +236,41 @@ class Board:
                             return False
                     ########
                     else:
-                        self.remove_piece_by_position(x, y, piece.color)
+                        request_remove = True
 
-                    """"""""
-                    print(piece.TYPE, "~", [x_difference, y_difference], "~", piece.get_king_moves(), "~",
-                          piece.possible_moves)
-                    """"""""
+                    temp_x_file = piece.x_file
+                    temp_y_file = piece.y_file
                     piece.x_file = x
                     piece.y_file = y
+                    ##IF CHECKED AFTER MOVE
+                    print(piece.color, "~", self.is_checked)
+                    if piece.color == "white":
+                        self.detect_check()
+                        print(self.is_checked)
+                        if self.is_checked[0] is True:
+                            print("white move not possible")
+                            piece.x_file = temp_x_file
+                            piece.y_file = temp_y_file
+                            piece.is_selected = False
+                            self.has_selected_piece = False
+                            self.detect_check()
+                            return
+                    if piece.color == "black":
+                        self.detect_check()
+                        print(self.is_checked)
+                        if self.is_checked[1] is True:
+                            print("black move is not possible")
+                            piece.x_file = temp_x_file
+                            piece.y_file = temp_y_file
+                            piece.is_selected = False
+                            self.has_selected_piece = False
+                            self.detect_check()
+                            return
+                    ####
+
+                    if request_remove:
+                        self.remove_piece_by_position(x, y, piece.color)
+
                     if piece.TYPE == "K":
                         print("hebele")
                         piece.castle_not_possible()
@@ -244,6 +297,8 @@ class Board:
                             return
 
                     ####
+                    self.detect_check()
+                    ####
 
                     piece.is_selected = False
                     self.end_turn()
@@ -267,3 +322,7 @@ class Board:
             self.current_player = "black"
         else:
             self.current_player = "white"
+
+    def deselect_piece(self, piece):
+        self.has_selected_piece = False
+        piece.is_selected = False
