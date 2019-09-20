@@ -68,7 +68,7 @@ def game_loop():
                         pygame.draw.circle(gameDisplay, (0, 255, 0), (piece.x_file * int(cfg.display_width / 8) + 35, piece.y_file * int(cfg.display_height / 8) + 35), 10)
 
                 pygame.display.update()
-
+#
 
 game_loop()
 pygame.quit()
