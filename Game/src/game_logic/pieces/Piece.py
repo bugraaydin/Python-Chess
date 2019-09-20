@@ -59,9 +59,15 @@ class Piece:
 
     def update_pawn_first_move(self):
         if self.color == "black" and self.y_file == 1:
-            self.possible_moves.remove([0, -2])
+            try:
+                self.possible_moves.remove([0, -2])
+            except:
+                pass
         if self.color == "white" and self.y_file == 6:
-            self.possible_moves.remove([0, 2])
+            try:
+                self.possible_moves.remove([0, 2])
+            except:
+                pass
 
     def castle_not_possible(self):
         if self.color == "black":

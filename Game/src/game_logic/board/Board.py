@@ -11,6 +11,7 @@ class Board:
     chessboard = []
     turn = 1
     is_checked = [False, False]  # index 0 for white, index 1 for black
+    is_check_mate = [False, False]
 
     def __init__(self):
 
@@ -180,6 +181,7 @@ class Board:
         for piece in pieces:
             if piece.is_selected:
                 request_remove = False
+                request_castle = False
                 x_difference = x - piece.x_file
                 y_difference = piece.y_file - y
 
@@ -226,22 +228,23 @@ class Board:
                             print("king kong")
                             if piece_in_castle_loc.TYPE == "R" and (piece.color == piece_in_castle_loc.color):
                                 print("zing zong")
-                                if piece_in_castle_loc.x_file == 0:
-                                    piece_in_castle_loc.x_file = 2
-                                else:
-                                    piece_in_castle_loc.x_file = 5
-                            piece.castle_not_possible()
+                                request_castle = True
 
                         else:
                             return False
                     ########
                     else:
+                        print("requested remove")
                         request_remove = True
 
                     temp_x_file = piece.x_file
                     temp_y_file = piece.y_file
+                    temp_piece = None
+                    temp_piece = self.get_piece_by_position(x, y)
                     piece.x_file = x
                     piece.y_file = y
+                    if request_remove:
+                        self.remove_piece_by_position(x, y, piece.color)
                     ##IF CHECKED AFTER MOVE
                     print(piece.color, "~", self.is_checked)
                     if piece.color == "white":
@@ -253,6 +256,17 @@ class Board:
                             piece.y_file = temp_y_file
                             piece.is_selected = False
                             self.has_selected_piece = False
+                            if temp_piece is not None:
+                                print(temp_piece.TYPE)
+                                print(temp_piece.x_file, temp_piece.y_file)
+                                if temp_piece.color == "white":
+                                    print("geri ekledim")
+                                    self.white_pieces.append(temp_piece)
+                                    request_remove = False
+                                else:
+                                    print("geri ekledim")
+                                    self.black_pieces.append(temp_piece)
+                                    request_remove = False
                             self.detect_check()
                             return
                     if piece.color == "black":
@@ -264,10 +278,26 @@ class Board:
                             piece.y_file = temp_y_file
                             piece.is_selected = False
                             self.has_selected_piece = False
+                            if temp_piece is not None:
+                                print(temp_piece.TYPE)
+                                print(temp_piece.x_file, temp_piece.y_file)
+                                if temp_piece.color == "white":
+                                    print("geri ekledim")
+                                    self.white_pieces.append(temp_piece)
+                                    request_remove = False
+                                else:
+                                    print("geri ekledim")
+                                    self.black_pieces.append(temp_piece)
+                                    request_remove = False
                             self.detect_check()
                             return
                     ####
-
+                    if request_castle == True:
+                        if piece_in_castle_loc.x_file == 0:
+                            piece_in_castle_loc.x_file = 2
+                        else:
+                            piece_in_castle_loc.x_file = 5
+                        piece.castle_not_possible()
                     if request_remove:
                         self.remove_piece_by_position(x, y, piece.color)
 

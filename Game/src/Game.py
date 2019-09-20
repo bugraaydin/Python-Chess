@@ -59,7 +59,7 @@ def game_loop():
 
                 for piece in board.white_pieces + board.black_pieces:
                     gameDisplay.blit(piece.image, (
-                    piece.x_file * int(cfg.display_width / 8), piece.y_file * int(cfg.display_height / 8)))
+                        piece.x_file * int(cfg.display_width / 8), piece.y_file * int(cfg.display_height / 8)))
                     if piece.is_selected:
                         pygame.draw.circle(gameDisplay, (0, 0, 255), (piece.x_file * int(cfg.display_width / 8) + 35,
                                                                       piece.y_file * int(cfg.display_height / 8) + 35),
